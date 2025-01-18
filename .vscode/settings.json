@@ -1,27 +1,28 @@
 {
     "editor.insertSpaces": true,
-    "[json]": {
-      "editor.tabSize": 2
-    },
-    "[python]": {
-      "editor.codeActionsOnSave": {
-        "source.organizeImports": "never"
-      },
-      "editor.defaultFormatter": "ms-python.autopep8",
-      "editor.formatOnSave": false,
-      "editor.tabSize": 4
-    },
     "autopep8.args": [
-      "--experimental",
-      "--ignore=E501",
-      // "--max-line-length", "120",
+        "--experimental",
+        "--ignore=E501",
+        // "--max-line-length", "120",
     ],
     "python.testing.pytestArgs": [
-      "--showlocals",
-      "--capture=tee-sys",
-      "-vvvvv",
-      "--durations=0"
+        "--showlocals",
+        "--capture=tee-sys",
+        "-vvvvv",
+        "--durations=0",
+        "--junit-xml=junit-report.xml"
     ],
     "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false
-  }
+    "python.testing.unittestEnabled": false,
+    "[json]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "never"
+        },
+        "editor.defaultFormatter": "ms-python.autopep8",
+        "editor.formatOnSave": false,
+        "editor.tabSize": 4
+    },
+}
