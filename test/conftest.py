@@ -26,7 +26,8 @@ CURRENT_MODULE_PATH = Path(__file__).parent.expanduser().resolve()
 
 # Configure conftest_logger
 tealogger.configure(
-    configuration=CURRENT_MODULE_PATH.parent / "configuration/sandbox.logger.json"
+    configuration=CURRENT_MODULE_PATH.parent
+    / "configuration/sandbox.logger.json"
 )
 conftest_logger = tealogger.get_logger(__name__)
 
@@ -127,15 +128,17 @@ def pytest_generate_tests(metafunc: Metafunc):
 
     # Parse metafunc name
     module_name = metafunc.module.__name__.split(".")[-1]
+    module_path = Path(metafunc.module.__file__).parent
     class_name = metafunc.cls.__name__
     function_name = metafunc.function.__name__
 
     # Load the test data
     test_data_path = None
-    if (Path(__file__).parent / f"{module_name}.json").exists():
-        test_data_path = Path(__file__).parent / f"{module_name}.json"
-    elif (Path(__file__).parent / "data.json").exists():
-        test_data_path = Path(__file__).parent / "data.json"
+    if (module_path / f"{module_name}.json").exists():
+        test_data_path = module_path / f"{module_name}.json"
+    elif (module_path / "data.json").exists():
+        test_data_path = module_path / "data.json"
+    conftest_logger.debug(f"Test Data Path: {test_data_path}")
 
     # Inject the test data
     if test_data_path:
