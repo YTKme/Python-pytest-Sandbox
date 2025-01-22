@@ -5,6 +5,10 @@
         "--ignore=E501",
         // "--max-line-length", "120",
     ],
+    "black-formatter.args": [
+        "--line-length",
+        "80"
+    ],
     "python.testing.pytestArgs": [
         "--showlocals",
         "--capture=tee-sys",
@@ -24,5 +28,5 @@
         "editor.defaultFormatter": "ms-python.autopep8",
         "editor.formatOnSave": false,
         "editor.tabSize": 4
-    },
+    }
 }
