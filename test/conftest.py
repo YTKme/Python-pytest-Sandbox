@@ -17,7 +17,10 @@ from pytest import (
     Metafunc,
     Parser,
     PytestPluginManager,
-    Session
+    Session,
+    Item,
+    CallInfo,
+    TestReport,
 )
 
 import tealogger
@@ -265,3 +268,36 @@ def pytest_unconfigure(config: Config):
     """
     conftest_logger.info("pytest Unconfigure")
     conftest_logger.debug(f"Config: {config}")
+
+
+@pytest.hookimpl(wrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | None:
+    """Run Test Make Report
+
+    Called to create a pytest TestReport for each of the setup, call
+    and teardown runtest phases of a test item.
+
+    :param item: The pytest item object
+    :type item: pytest.Item
+    :param call: The pytest call information for the phase
+    :type call: pytest.CallInfo[None]
+
+    :returns: The pytest TestReport object
+    :rtype: pytest.TestReport | None
+    """
+    conftest_logger.info("pytest Run Test Make Report")
+    conftest_logger.debug(f"Item: {item}")
+    conftest_logger.debug(f"Item Name: {item.name}")
+    conftest_logger.debug(f"Item Parent: {item.parent}")
+    conftest_logger.debug(f"Item Configuration: {item.config}")
+    conftest_logger.debug(f"Item Session: {item.session}")
+    conftest_logger.debug(f"Item File System Path: {item.fspath}")
+    conftest_logger.debug(f"Item Path: {item.path}")
+    conftest_logger.debug(f"Item Node ID: {item.nodeid}")
+
+    conftest_logger.debug(f"Call: {call}")
+
+    report = yield
+    conftest_logger.debug(f"Report: {report}")
+
+    return report
