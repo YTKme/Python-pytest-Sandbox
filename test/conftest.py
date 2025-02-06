@@ -35,13 +35,67 @@ tealogger.configure(
 conftest_logger = tealogger.get_logger(__name__)
 
 
+def pytest_load_initial_conftests(
+    early_config: Config,
+    parser: Parser,
+    args: list[str]
+) -> None:
+    """Load Initial Test Configuration
+
+    Called to implement the loading of initial conftest file(s) ahead of
+    command line option parsing.
+
+    NOTE: Not called for conftest file(s)
+
+    :param early_config: The pytest configuration object
+    :type early_config: pytest.Config
+    :param parser: The parser to add command line option(s)
+    :type parser: pytest.Parser
+    :param args: The list of argument(s) passed on the command line
+    :type args: list[str]
+    """
+    conftest_logger.info("pytest Load Initial Configure Test")
+    conftest_logger.debug(f"Early Configuration: {early_config}")
+    conftest_logger.debug(f"Parser: {parser}")
+    conftest_logger.debug(f"Argument: {args}")
+
+
+def pytest_cmdline_parse(
+    pluginmanager: PytestPluginManager,
+    args: list[str]
+) -> Config | None:
+    """Parse Command Line
+
+    Return an initialized configuration object, parsing the specified
+    list of argument(s).
+
+    NOTE: Not called for conftest file(s)
+
+    :param pluginmanager: The pytest plugin manager
+    :type pluginmanager: pytest.PytestPluginManager
+    :param args: The list of argument(s) passed on the command line
+    :type args: list[str]
+
+    :returns: The pytest configuration object
+    :rtype: pytest.Config | None
+    """
+    conftest_logger.info("pytest Command Line Parse")
+    conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
+    conftest_logger.debug(f"Argument: {args}")
+
+
+def pytest_addhooks(pluginmanager: PytestPluginManager):
+    conftest_logger.info("pytest Add Hook")
+    conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
+
+
 def pytest_addoption(parser: Parser, pluginmanager: PytestPluginManager):
     """Register Command Line Option(s)
 
     Register argparse style options and ini style config values, called
     once at the beginning of a test run.
 
-    :param parser: The parser for command line option(s)
+    :param parser: The parser to add command line option(s)
     :type parser: pytest.Parser
     :param pluginmanager: The pytest plugin manager
     :type pluginmanager: pytest.PytestPluginManager
@@ -49,6 +103,11 @@ def pytest_addoption(parser: Parser, pluginmanager: PytestPluginManager):
     conftest_logger.info("pytest Add Option")
     conftest_logger.debug(f"Parser: {parser}")
     conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
+
+
+def pytest_cmdline_main(config: Config):
+    conftest_logger.info("pytest Command Line Main")
+    conftest_logger.debug(f"Config: {config}")
 
 
 def pytest_configure(config: Config) -> None:
@@ -75,7 +134,10 @@ def pytest_sessionstart(session: Session) -> None:
     conftest_logger.info("pytest Session Start")
     conftest_logger.debug(f"Session: {session}")
 
-    conftest_logger.debug("Platform Information")
+    # Platform Information
+    # https://docs.python.org/3/library/platform.html
+    # Cross Platform
+    conftest_logger.debug("Cross Platform Information")
     conftest_logger.debug(f"Architecture: {platform.architecture()}")
     conftest_logger.debug(f"Machine: {platform.machine()}")
     conftest_logger.debug(f"Node: {platform.node()}")
@@ -92,6 +154,29 @@ def pytest_sessionstart(session: Session) -> None:
     conftest_logger.debug(f"System: {platform.system()}")
     conftest_logger.debug(f"Version: {platform.version()}")
     conftest_logger.debug(f"Unix Name: {platform.uname()}")
+    # Java Platform
+    conftest_logger.debug("Java Platform Information")
+    conftest_logger.debug(f"Java Version: {platform.java_ver()}")
+    # Windows Platform
+    conftest_logger.debug("Windows Platform Information")
+    conftest_logger.debug(f"Windows Version: {platform.win32_ver()}")
+    conftest_logger.debug(f"Windows Edition: {platform.win32_edition()}")
+    conftest_logger.debug(f"Windows IoT: {platform.win32_is_iot()}")
+    # macOS Platform
+    conftest_logger.debug("macOS Platform Information")
+    conftest_logger.debug(f"macOS Version: {platform.mac_ver()}")
+    # iOS Platform
+    # conftest_logger.debug("iOS Platform Information")
+    # conftest_logger.debug(f"iOS Version: {platform.ios_ver()}")
+    # Unix Platform
+    conftest_logger.debug("Unix Platform Information")
+    conftest_logger.debug(f"Unix libc Version: {platform.libc_ver()}")
+    # Linux Platform
+    # conftest_logger.debug("Linux Platform Information")
+    # conftest_logger.debug(f"Linux OS Release: {platform.freedesktop_os_release()}")
+    # Android Platform
+    # conftest_logger.debug("Android Platform Information")
+    # conftest_logger.debug(f"Android Version: {platform.android_ver()}")
 
 
 def pytest_generate_tests(metafunc: Metafunc):
@@ -268,6 +353,11 @@ def pytest_unconfigure(config: Config):
     """
     conftest_logger.info("pytest Unconfigure")
     conftest_logger.debug(f"Config: {config}")
+
+
+def pytest_collection(session: Session):
+    conftest_logger.info("pytest Collection")
+    conftest_logger.debug(f"Session: {session}")
 
 
 @pytest.hookimpl(wrapper=True, tryfirst=True)
