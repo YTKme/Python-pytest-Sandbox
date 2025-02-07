@@ -8,6 +8,7 @@ This module test functionality for the Mathematics module.
 from numbers import Number
 from pathlib import Path
 
+import pytest
 import tealogger
 
 from pytest_sandbox.alpha.mathematics import Mathematics
@@ -26,6 +27,10 @@ test_logger = tealogger.get_logger(__name__)
 class TestMathematics:
     """Test Mathematics"""
 
+    @pytest.mark.parametrize(
+        "first_number,second_number,expected",
+        [(3, 5, 8)]
+    )
     def test_add(
         self,
         first_number: Number,
@@ -53,6 +58,10 @@ class TestMathematics:
             second_number=second_number
         ) == expected
 
+    @pytest.mark.parametrize(
+        "first_number,second_number,expected",
+        [(3, 5, -2)]
+    )
     def test_subtract(
         self,
         first_number: Number,
