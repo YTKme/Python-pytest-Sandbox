@@ -9,12 +9,16 @@ from itertools import product
 import json
 from pathlib import Path
 import platform
+from typing import Any
 
 import pytest
 from pytest import (
+    Class,
+    Collector,
     Config,
     ExitCode,
     Metafunc,
+    Module,
     Parser,
     PytestPluginManager,
     Session,
@@ -35,12 +39,16 @@ tealogger.configure(
 conftest_logger = tealogger.get_logger(__name__)
 
 
+######################
+# Bootstrapping Hook #
+######################
+
 def pytest_load_initial_conftests(
     early_config: Config,
     parser: Parser,
     args: list[str]
 ) -> None:
-    """Load Initial Test Configuration
+    """Load Initial Test Configuration Hook
 
     Called to implement the loading of initial conftest file(s) ahead of
     command line option parsing.
@@ -64,7 +72,7 @@ def pytest_cmdline_parse(
     pluginmanager: PytestPluginManager,
     args: list[str]
 ) -> Config | None:
-    """Parse Command Line
+    """Parse Command Line Hook
 
     Return an initialized configuration object, parsing the specified
     list of argument(s).
@@ -84,12 +92,29 @@ def pytest_cmdline_parse(
     conftest_logger.debug(f"Argument: {args}")
 
 
-def pytest_addhooks(pluginmanager: PytestPluginManager):
-    conftest_logger.info("pytest Add Hook")
-    conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
+def pytest_cmdline_main(config: Config) -> ExitCode | int | None:
+    """Command Line Main Hook
+
+    Called for performing the main command line action.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+
+    :returns: The exit code
+    :rtype: pytest.ExitCode | int | None
+    """
+    conftest_logger.info("pytest Command Line Main")
+    conftest_logger.debug(f"Config: {config}")
 
 
-def pytest_addoption(parser: Parser, pluginmanager: PytestPluginManager):
+#######################
+# Initialization Hook #
+#######################
+
+def pytest_addoption(
+    parser: Parser,
+    pluginmanager: PytestPluginManager
+) -> None:
     """Register Command Line Option(s)
 
     Register argparse style options and ini style config values, called
@@ -105,9 +130,16 @@ def pytest_addoption(parser: Parser, pluginmanager: PytestPluginManager):
     conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
 
 
-def pytest_cmdline_main(config: Config):
-    conftest_logger.info("pytest Command Line Main")
-    conftest_logger.debug(f"Config: {config}")
+def pytest_addhooks(pluginmanager: PytestPluginManager) -> None:
+    """Add Hook(s)
+
+    Called at plugin registration time to allow adding new hook(s).
+
+    :param pluginmanager: The pytest plugin manager
+    :type pluginmanager: pytest.PytestPluginManager
+    """
+    conftest_logger.info("pytest Add Hook")
+    conftest_logger.debug(f"Plugin Manager: {pluginmanager}")
 
 
 def pytest_configure(config: Config) -> None:
@@ -119,6 +151,20 @@ def pytest_configure(config: Config) -> None:
     :type config: pytest.Config
     """
     conftest_logger.info("pytest Configure")
+    conftest_logger.debug(f"Config: {config}")
+
+
+def pytest_unconfigure(config: Config) -> None:
+    """Unconfigure Test
+
+    Called before test process is exited.
+
+    NOTE: Run once
+
+    :param config: The pytest config object
+    :type config: pytest.Config
+    """
+    conftest_logger.info("pytest Unconfigure")
     conftest_logger.debug(f"Config: {config}")
 
 
@@ -135,31 +181,10 @@ def pytest_sessionstart(session: Session) -> None:
     conftest_logger.debug(f"Session: {session}")
 
 
-def pytest_generate_tests(metafunc: Metafunc):
-    """Generate Test Hook
-
-    Dynamically parametrize test(s) using test data from a JSON
-    (JavaScript Object Notation) file. The data will align with the
-    class and function name of the test(s).
-
-    :param metafunc: Objects passed to the pytest_generate_tests hook
-    :type metafunc: pytest.Metafunc
-    """
-    conftest_logger.info("pytest Generate Test")
-    conftest_logger.debug(f"Metafunc: {metafunc}")
-    conftest_logger.debug(f"Module Name: {metafunc.module.__name__}")
-    conftest_logger.debug(f"Class Name: {metafunc.cls.__name__}")
-    conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
-    conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
-
-    # Parse metafunc name
-    module_name = metafunc.module.__name__.split(".")[-1]
-    module_path = Path(metafunc.module.__file__).parent
-    class_name = metafunc.cls.__name__
-    function_name = metafunc.function.__name__
-
-
-def pytest_sessionfinish(session: Session, exitstatus: int | ExitCode):
+def pytest_sessionfinish(
+    session: Session,
+    exitstatus: int | ExitCode
+) -> None:
     """Finish Session
 
     Called after whole test run finished, right before returning the
@@ -177,23 +202,269 @@ def pytest_sessionfinish(session: Session, exitstatus: int | ExitCode):
     conftest_logger.debug(f"Exit Status: {exitstatus}")
 
 
-def pytest_unconfigure(config: Config):
-    """Unconfigure Test
+# def pytest_plugin_registered(
+#     plugin: object,
+#     plugin_name: str,
+#     manager: PytestPluginManager
+# ) -> None:
+#     """Plugin Registered
 
-    Called before test process is exited.
+#     A new pytest plugin got registered.
 
-    NOTE: Run once
+#     :param plugin: The plugin module or instance
+#     :type plugin: object
+#     :param plugin_name: The name by which the plugin is registered
+#     :type plugin_name: str
+#     :param manager: The pytest plugin manager
+#     :type manager: pytest.PytestPluginManager
+#     """
+#     conftest_logger.info("pytest Plugin Registered")
+#     conftest_logger.debug(f"Plugin: {plugin}")
+#     conftest_logger.debug(f"Plugin Name: {plugin_name}")
+#     conftest_logger.debug(f"Manager: {manager}")
 
-    :param config: The pytest config object
-    :type config: pytest.Config
+
+####################
+# Collection Hook #
+####################
+
+def pytest_collection(session: Session) -> object | None:
+    """Collection Hook
+
+    Perform the collection phase for the given session.
+
+    The return value is not used, but only stops further processing.
+
+    :param session: The pytest session object
+    :type session: pytest.Session
+
+    :returns: The pytest collection object
+    :rtype: object | None
     """
-    conftest_logger.info("pytest Unconfigure")
+    conftest_logger.info("pytest Collection")
+    conftest_logger.debug(f"Session: {session}")
+
+
+def pytest_ignore_collect(
+    collection_path: Path,
+    # path: LEGACY_PATH,
+    config: Config
+) -> bool | None:
+    """Ignore Collect Hook
+
+    Determine whether a path should be ignored for collection.
+
+    Return True to ignore this path for collection.
+
+    Return None to let other plugins ignore the path for collection.
+
+    Returning False will forcefully not ignore this path for collection,
+        without giving a chance for other plugins to ignore this path.
+
+    :param collection_path: The path to analyze
+    :type collection_path: Path
+    :param path: The path to analyze (deprecated)
+    :type path: LEGACY_PATH
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+
+    :returns: Whether to ignore the collection
+    :rtype: bool
+    """
+    conftest_logger.info("pytest Ignore Collect")
+    conftest_logger.debug(f"Collection Path: {collection_path}")
     conftest_logger.debug(f"Config: {config}")
 
 
-def pytest_collection(session: Session):
-    conftest_logger.info("pytest Collection")
+def pytest_collect_directory(
+    path: Path,
+    parent: Collector
+) -> Collector | None:
+    """Collect Directory Hook
+
+    Create a Collector for the given directory, or None if not relevant.
+
+    :param path: The path to analyze
+    :type path: Path
+    :param parent: The parent collector object
+    :type parent: pytest.Collector
+
+    :returns: The collector for the given directory
+    :rtype: pytest.Collector | None
+    """
+    conftest_logger.info("pytest Collect Directory")
+    conftest_logger.debug(f"Path: {path}")
+    conftest_logger.debug(f"Parent: {parent}")
+
+
+def pytest_collect_file(
+    file_path: Path,
+    # path: LEGACY_PATH,
+    parent: Collector
+) -> Collector | None:
+    """Collect File Hook
+
+    Create a Collector for the given path, or None if not relevant.
+
+    :param file_path: The path to analyze
+    :type file_path: Path
+    :param path: The path to collect (deprecated)
+    :type path: LEGACY_PATH
+    :param parent: The parent collector object
+    :type parent: pytest.Collector
+
+    :returns: The collector for the given path
+    :rtype: pytest.Collector | None
+    """
+    conftest_logger.info("pytest Collect File")
+    conftest_logger.debug(f"File Path: {file_path}")
+    conftest_logger.debug(f"Parent: {parent}")
+
+
+def pytest_pycollect_makemodule(
+    module_path: Path,
+    # path: LEGACY_PATH,
+    parent: Collector
+) -> Module | None:
+    """Make Module Hook
+
+    Create a Collector for the given path, or None if not relevant.
+
+    :param module_path: The path of the module to collect
+    :type module_path: Path
+    :param path: The path of the module to collect (deprecated)
+    :type path: LEGACY_PATH
+    :param parent: The parent collector object
+    :type parent: pytest.Collector
+
+    :returns: The pytest.Module collector
+    :rtype: pytest.Module | None
+    """
+    conftest_logger.info("pytest pycollect Make Module")
+    conftest_logger.debug(f"Module Path: {module_path}")
+    conftest_logger.debug(f"Parent: {parent}")
+
+
+def pytest_pycollect_makeitem(
+    collector: Module | Class,
+    name: str,
+    obj: object
+) -> None | Item | Collector | list[Item | Collector]:
+    """Make Item Hook
+
+    Create an Item for the given path, or None if not relevant.
+
+    :param collector: The module/class collector
+    :type collector: pytest.Module | pytest.Class
+    :param name: The name of the object in the module/class
+    :type name: str
+    :param obj: The object
+    :type obj: object
+
+    :returns: The created items/collectors
+    :rtype: None | pytest.Item | pytest.Collector | list[pytest.Item | pytest.Collector]
+    """
+    conftest_logger.info("pytest pycollect Make Item")
+    conftest_logger.debug(f"Collector: {collector}")
+    conftest_logger.debug(f"Name: {name}")
+    conftest_logger.debug(f"Object: {obj}")
+
+
+def pytest_generate_tests(metafunc: Metafunc) -> None:
+    """Generate Test Hook
+
+    Dynamically parametrize test(s) using test data from a JSON
+    (JavaScript Object Notation) file. The data will align with the
+    class and function name of the test(s).
+
+    :param metafunc: The Metafunc helper for the test function
+    :type metafunc: pytest.Metafunc
+    """
+    conftest_logger.info("pytest Generate Test")
+    conftest_logger.debug(f"Metafunc: {metafunc}")
+    conftest_logger.debug(f"Module Name: {metafunc.module.__name__}")
+    conftest_logger.debug(f"Class Name: {metafunc.cls.__name__}")
+    conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
+    conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
+
+
+def pytest_make_parametrize_id(
+    config: Config,
+    val: object,
+    argname: str
+) -> str | None:
+    """Make Parametrize ID Hook
+
+    Return a user friendly string representation of the given value that
+    will be used by @pytest.mark.parametrize calls, or None if the hook
+    doesn't know about the value.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param val: The parametrized value
+    :type val: object
+    :param argname: The automatic parameter name produced by pytest
+    :type argname: str
+
+    :returns: The user friendly string representation of the given value
+    :rtype: str
+    """
+    conftest_logger.info("pytest Make Parametrize ID")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Value: {val}")
+    conftest_logger.debug(f"Argument Name: {argname}")
+
+
+def pytest_markeval_namespace(config: Config) -> dict[str, Any]:
+    """Mark Evaluate Namespace Hook
+
+    Called when constructing the globals dictionary used for evaluating
+    string conditions in xfail/skipif markers.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+
+    :returns: A dictionary of additional globals to add
+    :rtype: dict[str, Any]
+    """
+    conftest_logger.info("pytest Mark Evaluate Namespace")
+    conftest_logger.debug(f"Configuration: {config}")
+
+
+def pytest_collection_modifyitems(
+    session: Session,
+    config: Config,
+    items: list[Item]
+) -> None:
+    """Collection Modify Items Hook
+
+    Called after collection has been performed. May filter or re-order
+    the items in-place.
+
+    :param session: The pytest session object
+    :type session: pytest.Session
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param items: List of item objects
+    :type items: list[pytest.Item]
+    """
+    conftest_logger.info("pytest Collection Modify Item")
     conftest_logger.debug(f"Session: {session}")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Item List: {items}")
+
+
+def pytest_collection_finish(session: Session) -> None:
+    """Collection Finish Hook
+
+    Called after collection has been performed and modified.
+
+    :param session: The pytest session object
+    :type session: pytest.Session
+    """
+    conftest_logger.info("pytest Collection Finish")
+    conftest_logger.debug(f"Session: {session}")
+
 
 
 @pytest.hookimpl(wrapper=True, tryfirst=True)
