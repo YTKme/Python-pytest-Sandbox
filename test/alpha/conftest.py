@@ -14,9 +14,11 @@ from typing import Any
 import pytest
 from pytest import (
     Class,
+    CollectReport,
     Collector,
     Config,
     ExitCode,
+    Function,
     Metafunc,
     Module,
     Parser,
@@ -466,17 +468,143 @@ def pytest_collection_finish(session: Session) -> None:
     conftest_logger.debug(f"Session: {session}")
 
 
+#####################
+# Test Running Hook #
+#####################
 
-@pytest.hookimpl(wrapper=True, tryfirst=True)
+def pytest_runtestloop(session: Session) -> object | None:
+    """Run Test Loop Hook
+
+    Perform the main runtest loop (after collection finished)
+
+    The return value is not used, but only stops further processing.
+
+    :param session: The pytest session object
+    :type session: pytest.Session
+
+    :returns: The pytest runtestloop object
+    :rtype: pytest.object | None
+    """
+    conftest_logger.info("pytest Run Test Loop")
+    conftest_logger.debug(f"Session: {session}")
+
+
+def pytest_runtest_protocol(
+    item: Item,
+    nextitem: Item | None
+) -> object | None:
+    """Run Test Protocol Hook
+
+    Perform the runtest protocol for a single test item.
+
+    The return value is not used, but only stops further processing.
+
+    :param item: Test item for which the runtest protocol is performed
+    :type item: pytest.Item
+    :param nextitem:  The scheduled to be next test item (or None if
+        this is the end my friend)
+    :type nextitem: pytest.Item | None
+
+    :returns: The pytest runtest protocol object
+    :rtype: pytest.object | None
+    """
+    conftest_logger.info("pytest Run Test Protocol")
+    conftest_logger.debug(f"Item: {item}")
+    conftest_logger.debug(f"Next Item: {nextitem}")
+
+
+def pytest_runtest_logstart(
+    nodeid: str,
+    location: tuple[str, int | None, str]
+) -> None:
+    """Run Test Log Start Hook
+
+    Called at the start of running the runtest protocol for a single
+    item.
+
+    :param nodeid: Full node ID of the item
+    :type nodeid: str
+    :param location: A tuple of (filename, lineno, testname) where
+        filename is a file path relative to config.rootpath and lineno
+        is 0-based
+    :type location: tuple[str, int | None, str]
+    """
+    conftest_logger.info("pytest Run Test Log Start")
+    conftest_logger.debug(f"Node Identifier: {nodeid}")
+    conftest_logger.debug(f"Location: {location}")
+
+
+def pytest_runtest_logfinish(
+    nodeid: str,
+    location: tuple[str, int | None, str]
+) -> None:
+    """Run Test Log Finish Hook
+
+    Called at the end of running the runtest protocol for a single item.
+
+    :param nodeid: Full node ID of the item
+    :type nodeid: str
+    :param location: A tuple of (filename, lineno, testname) where
+        filename is a file path relative to config.rootpath and lineno
+        is 0-based
+    :type location: tuple[str, int | None, str]
+    """
+    conftest_logger.info("pytest Run Test Log Finish")
+    conftest_logger.debug(f"Node Identifier: {nodeid}")
+    conftest_logger.debug(f"Location: {location}")
+
+
+def pytest_runtest_setup(item: Item) -> None:
+    """Run Test Setup Hook
+
+    Called to perform the setup phase for a test item.
+
+    :param item: The item
+    :type item: pytest.Item
+    """
+    conftest_logger.info("pytest Run Test Setup")
+    conftest_logger.debug(f"Item: {item}")
+
+
+def pytest_runtest_call(item: Item) -> None:
+    """Run Test Call Hook
+
+    Called to run the test for test item (the call phase).
+
+    :param item: The item
+    :type item: pytest.Item
+    """
+    conftest_logger.info("pytest Run Test Call")
+    conftest_logger.debug(f"Item: {item}")
+
+
+def pytest_runtest_teardown(item: Item, nextitem: Item | None) -> None:
+    """Run Test Teardown Hook
+
+    Called to perform the teardown phase for a test item.
+
+    :param item: The item
+    :type item: pytest.Item
+    :param nextitem: The scheduled to be next test item (None if no
+        further test item is scheduled). This argument is used to
+        perform exact teardowns, i.e. calling just enough finalizers so
+        that nextitem only needs to call setup functions
+    :type nextitem: pytest.Item | None
+    """
+    conftest_logger.info("pytest Run Test Teardown")
+    conftest_logger.debug(f"Item: {item}")
+    conftest_logger.debug(f"Next Item: {nextitem}")
+
+
 def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | None:
     """Run Test Make Report
 
     Called to create a pytest TestReport for each of the setup, call
     and teardown runtest phases of a test item.
 
-    :param item: The pytest item object
+    :param item: The item
     :type item: pytest.Item
-    :param call: The pytest call information for the phase
+    :param call: The CallInfo for the phase
     :type call: pytest.CallInfo[None]
 
     :returns: The pytest TestReport object
@@ -486,7 +614,46 @@ def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | 
     conftest_logger.debug(f"Item: {item}")
     conftest_logger.debug(f"Call: {call}")
 
-    report = yield
-    conftest_logger.debug(f"Report: {report}")
 
-    return report
+def pytest_pyfunc_call(pyfuncitem: Function) -> None:
+    """Pyfunc Call Hook
+
+    Call underlying test function.
+
+    :param pyfuncitem: The function item
+    :type pyfuncitem: pytest.Function
+    """
+    conftest_logger.info("pytest Python Function Call")
+    conftest_logger.debug(f"Python Function Item: {pyfuncitem}")
+
+
+##################
+# Reporting Hook #
+##################
+
+def pytest_collectstart(collector: Collector) -> None:
+    """Collect Start Hook
+
+    Collector starts collecting.
+
+    :param collector: The collector
+    :type collector: pytest.Collector
+    """
+    conftest_logger.info("pytest Collect Start")
+    conftest_logger.debug(f"Collector: {collector}")
+
+def pytest_make_collect_report(
+    collector: Collector
+) -> CollectReport | None:
+    """Make Collect Report Hook
+
+    Perform collector.collect() and return a CollectReport.
+
+    :param collector: The collector
+    :type collector: pytest.Collector
+
+    :returns: The pytest CollectReport object
+    :rtype: pytest.CollectReport | None
+    """
+    conftest_logger.info("pytest Make Collect Report")
+    conftest_logger.debug(f"Collector: {collector}")
