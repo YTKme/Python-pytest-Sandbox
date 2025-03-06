@@ -9,8 +9,11 @@ from itertools import product
 import json
 from pathlib import Path
 import platform
-from typing import Any
+from typing import Any, Literal, Mapping, Sequence
+import warnings
 
+from _pytest.fixtures import SubRequest
+from _pytest.terminal import TerminalReporter
 import pytest
 from pytest import (
     Class,
@@ -18,6 +21,7 @@ from pytest import (
     Collector,
     Config,
     ExitCode,
+    FixtureDef,
     Function,
     Metafunc,
     Module,
@@ -27,6 +31,7 @@ from pytest import (
     Item,
     CallInfo,
     TestReport,
+    TestShortLogReport,
 )
 
 import tealogger
@@ -642,6 +647,7 @@ def pytest_collectstart(collector: Collector) -> None:
     conftest_logger.info("pytest Collect Start")
     conftest_logger.debug(f"Collector: {collector}")
 
+
 def pytest_make_collect_report(
     collector: Collector
 ) -> CollectReport | None:
@@ -657,3 +663,339 @@ def pytest_make_collect_report(
     """
     conftest_logger.info("pytest Make Collect Report")
     conftest_logger.debug(f"Collector: {collector}")
+
+
+def pytest_itemcollected(item: Item) -> None:
+    """Item Collected Hook
+
+    We just collected a test item.
+
+    :param item: The item
+    :type item: pytest.Item
+    """
+    conftest_logger.info("pytest Item Collected")
+    conftest_logger.debug(f"Item: {item}")
+
+
+def pytest_collectreport(report: CollectReport) -> None:
+    """Collect Report Hook
+
+    Collector finished collecting.
+
+    :param report: The collect report
+    :type report: pytest.CollectReport
+    """
+    conftest_logger.info("pytest Collect Report")
+    conftest_logger.debug(f"Report: {report}")
+
+
+def pytest_deselected(items: Sequence[Item]) -> None:
+    """Deselected Hook
+
+    Called for deselected test items, e.g. by keyword.
+
+    :param items: The items
+    :type items: Sequence[pytest.Item]
+    """
+    conftest_logger.info("pytest Deselected")
+    conftest_logger.debug(f"Items: {items}")
+
+
+def pytest_report_header(
+    config: Config,
+    start_path: Path,
+    # startdir: LEGACY_PATH
+) -> str | list[str]:
+    """Report Header Hook
+
+    Return a string or list of strings to be displayed as header info
+    for terminal reporting.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param start_path: The starting directory
+    :type start_path: Path
+    :param startdir: The starting directory (deprecated)
+    :type startdir: LEGACY_PATH
+
+    :returns: The header information
+    :rtype: str | list[str]
+    """
+    conftest_logger.info("pytest Report Header")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Start Path: {start_path}")
+
+
+def pytest_report_collectionfinish(
+    config: Config,
+    start_path: Path,
+    # startdir: LEGACY_PATH,
+    items: Sequence[Item],
+) -> str | list[str]:
+    """Report Collection Finish Hook
+
+    Called after collection has been performed and modified.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param start_path: The starting directory
+    :type start_path: Path
+    :param startdir: The starting directory (deprecated)
+    :type startdir: LEGACY_PATH
+    :param items: List of pytest items that are going to be executed;
+        this list should not be modified
+    :type items: Sequence[pytest.Item]
+
+    :returns: The collection finish information
+    :rtype: str | list[str]
+    """
+    conftest_logger.info("pytest Report Collection Finish")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Start Path: {start_path}")
+    conftest_logger.debug(f"Items: {items}")
+
+
+def pytest_report_teststatus(
+    report: CollectReport | TestReport,
+    config: Config
+) -> TestShortLogReport | tuple[str, str, str | tuple[str, Mapping[str, bool]]]:
+    """Report Test Status Hook
+
+    Return result-category, shortletter and verbose word for status
+    reporting.
+
+    :param report: The report object whose status is to be returned
+    :type report: pytest.CollectReport | pytest.TestReport
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+
+    :returns: The test status
+    :rtype: pytest.TestShortLogReport | tuple[str, str, str | tuple[str, Mapping[str, bool]]]
+    """
+    conftest_logger.info("pytest Report Test Status")
+    conftest_logger.debug(f"Report: {report}")
+    conftest_logger.debug(f"Configuration: {config}")
+
+
+def pytest_report_to_serializable(
+    config: Config,
+    report: CollectReport | TestReport,
+) -> dict[str, Any] | None:
+    """Report to Serializable Hook
+
+    Serialize the given report object into a data structure suitable for
+    sending over the wire, e.g. converted to JSON.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param report: The report
+    :type report: pytest.CollectReport | pytest.TestReport
+
+    :returns: The serializable object
+    :rtype: dict[str, Any] | None
+    """
+    conftest_logger.info("pytest Report to Serializable")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Report: {report}")
+
+
+def pytest_report_from_serializable(
+    config: Config,
+    data: dict[str, Any],
+) -> CollectReport | TestReport | None:
+    """Report from Serializable Hook
+
+    Restore a report object previously serialized with
+    pytest_report_to_serializable.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param data: The serializable data
+    :type data: dict[str, Any]
+
+    :returns: The report object
+    :rtype: pytest.CollectReport | pytest.TestReport | None
+    """
+    conftest_logger.info("pytest Report from Serializable")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Data: {data}")
+
+
+def pytest_terminal_summary(
+    terminalreporter: TerminalReporter,
+    exitstatus: ExitCode,
+    config: Config,
+) -> None:
+    """Terminal Summary Hook
+
+    Add a section to terminal summary reporting.
+
+    :param terminalreporter: The internal terminal reporter object
+    :type terminalreporter: _pytest.terminal.TerminalReporter
+    :param exitstatus: The exit status
+    :type exitstatus: pytest.ExitCode
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    """
+    conftest_logger.info("pytest Terminal Summary")
+    conftest_logger.debug(f"Terminal Reporter: {terminalreporter}")
+    conftest_logger.debug(f"Exit Status: {exitstatus}")
+    conftest_logger.debug(f"Configuration: {config}")
+
+
+def pytest_fixture_setup(
+    fixturedef: FixtureDef[Any],
+    request: SubRequest,
+) -> object | None:
+    """Fixture Setup Hook
+
+    Perform fixture setup execution.
+
+    :param fixturedef: The fixture definition object
+    :type fixturedef: pytest.FixtureDef
+    :param request: The fixture request object
+    :type request: pytest.SubRequest
+
+    :returns: The return value of the call to the fixture function
+    :rtype: object | None
+    """
+    conftest_logger.info("pytest Fixture Setup")
+    conftest_logger.debug(f"Fixture Definition: {fixturedef}")
+    conftest_logger.debug(f"Request: {request}")
+
+
+def pytest_fixture_post_finalizer(
+    fixturedef: FixtureDef[Any],
+    request: SubRequest,
+) -> None:
+    """Fixture Post Finalizer Hook
+
+    Called after fixture teardown, but before the cache is cleared, so
+    the fixture result fixturedef.cached_result is still available (not
+    None).
+
+    :param fixturedef: The fixture definition object
+    :type fixturedef: pytest.FixtureDef
+    :param request: The fixture request object
+    :type request: pytest.SubRequest
+    """
+    conftest_logger.info("pytest Fixture Post Finalizer")
+    conftest_logger.debug(f"Fixture Definition: {fixturedef}")
+    conftest_logger.debug(f"Request: {request}")
+
+
+def pytest_warning_recorded(
+    warning_message: warnings.WarningMessage,
+    when: Literal["config", "collect", "runtest"],
+    nodeid: str,
+    location: tuple[str, int, str] | None,
+) -> None:
+    """Warning Recorded Hook
+
+    Process a warning captured by the internal pytest warnings plugin.
+
+    :param warning_message: The captured warning
+    :type warning_message: warnings.WarningMessage
+    :param when: Indicates when the warning was captured
+    :type when: Literal["config", "collect", "runtest"]
+    :param nodeid: Full ID of the item
+    :type nodeid: str
+    :param location: When available, holds information about the
+        execution context of the captured warning (filename, linenumber,
+        function)
+    :type location: tuple[str, int, str] | None
+    """
+    conftest_logger.info("pytest Warning Recorded")
+    conftest_logger.debug(f"Warning Message: {warning_message}")
+    conftest_logger.debug(f"When: {when}")
+    conftest_logger.debug(f"Node IDentifier: {nodeid}")
+    conftest_logger.debug(f"Location: {location}")
+
+
+def pytest_runtest_logreport(
+    report: TestReport
+) -> None:
+    """Run Test Log Report Hook
+
+    Process the TestReport produced for each of the setup, call and
+    teardown runtest phases of an item.
+
+    :param report: The test report
+    :type report: pytest.TestReport
+    """
+    conftest_logger.info("pytest Run Test Log Report")
+    conftest_logger.debug(f"Report: {report}")
+
+
+def pytest_assertrepr_compare(
+    config: Config,
+    op: str,
+    left: object,
+    right: object,
+) -> list[str] | None:
+    """Assert Representation Compare Hook
+
+    Return explanation for comparisons in failing assert expressions.
+
+    Return None for no custom explanation, otherwise return a list of
+    strings. The strings will be joined by newlines but any newlines in
+    a string will be escaped. Note that all but the first line will be
+    indented slightly, the intention is for the first line to be a
+    summary.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param op: The operator, e.g. "==", "!=", "not in".
+    :type op: str
+    :param left: The left operand
+    :type left: object
+    :param right: The right operand
+    :type right: object
+
+    :returns: The explanation for the comparison
+    :rtype: list[str] | None
+    """
+    conftest_logger.info("pytest Assert Representation Compare")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Operator: {op}")
+    conftest_logger.debug(f"Left Operand: {left}")
+    conftest_logger.debug(f"Right Operand: {right}")
+
+
+def pytest_assertion_pass(
+    item: Item,
+    lineno: int,
+    orig: str,
+    expl: str,
+) -> None:
+    """Assertion Pass Hook
+
+    Called whenever an assertion passes.
+
+    Use this hook to do some processing after a passing assertion. The
+    original assertion information is available in the orig string and
+    the pytest introspected assertion information is available in the
+    expl string.
+
+    This hook must be explicitly enabled by the
+    enable_assertion_pass_hook ini-file option.
+
+    :param item: The pytest item object of current test
+    :type item: pytest.Item
+    :param lineno: Line number of the assert statement
+    :type lineno: int
+    :param orig: String with the original assertion
+    :type orig: str
+    :param expl: String with the assert explanation
+    :type expl: str
+    """
+    conftest_logger.info("pytest Assertion Pass")
+    conftest_logger.debug(f"Item: {item}")
+    conftest_logger.debug(f"Line Number: {lineno}")
+    conftest_logger.debug(f"Original Assertion: {orig}")
+    conftest_logger.debug(f"Explanation: {expl}")
+
+
+##############################
+# Debugging/Interaction Hook #
+##############################
