@@ -5,8 +5,6 @@ Configure Test
 This module implement main test configuration for the Sandbox.
 """
 
-from itertools import product
-import json
 from pathlib import Path
 import pdb
 import platform
@@ -190,6 +188,51 @@ def pytest_sessionstart(session: Session) -> None:
     """
     conftest_logger.info("pytest Session Start")
     conftest_logger.debug(f"Session: {session}")
+
+    # Platform Information
+    # https://docs.python.org/3/library/platform.html
+    conftest_logger.debug("Platform Information")
+    # Cross Platform
+    conftest_logger.debug("Cross Platform Information")
+    conftest_logger.debug(f"Architecture: {platform.architecture()}")
+    conftest_logger.debug(f"Machine: {platform.machine()}")
+    conftest_logger.debug(f"Node: {platform.node()}")
+    conftest_logger.debug(f"Platform: {platform.platform()}")
+    conftest_logger.debug(f"Processor: {platform.processor()}")
+    conftest_logger.debug(f"Python Build: {platform.python_build()}")
+    conftest_logger.debug(f"Python Compiler: {platform.python_compiler()}")
+    conftest_logger.debug(f"Python Branch: {platform.python_branch()}")
+    conftest_logger.debug(f"Python Implementation: {platform.python_implementation()}")
+    conftest_logger.debug(f"Python Revision: {platform.python_revision()}")
+    conftest_logger.debug(f"Python Version: {platform.python_version()}")
+    conftest_logger.debug(f"Python Version Tuple: {platform.python_version_tuple()}")
+    conftest_logger.debug(f"Release: {platform.release()}")
+    conftest_logger.debug(f"System: {platform.system()}")
+    conftest_logger.debug(f"Version: {platform.version()}")
+    conftest_logger.debug(f"Unix Name: {platform.uname()}")
+    # Java Platform
+    conftest_logger.debug("Java Platform Information")
+    conftest_logger.debug(f"Java Version: {platform.java_ver()}")
+    # Windows Platform
+    conftest_logger.debug("Windows Platform Information")
+    conftest_logger.debug(f"Windows Version: {platform.win32_ver()}")
+    conftest_logger.debug(f"Windows Edition: {platform.win32_edition()}")
+    conftest_logger.debug(f"Windows IoT: {platform.win32_is_iot()}")
+    # macOS Platform
+    conftest_logger.debug("macOS Platform Information")
+    conftest_logger.debug(f"macOS Version: {platform.mac_ver()}")
+    # iOS Platform
+    # conftest_logger.debug("iOS Platform Information")
+    # conftest_logger.debug(f"iOS Version: {platform.ios_ver()}")
+    # Unix Platform
+    conftest_logger.debug("Unix Platform Information")
+    conftest_logger.debug(f"Unix libc Version: {platform.libc_ver()}")
+    # Linux Platform
+    # conftest_logger.debug("Linux Platform Information")
+    # conftest_logger.debug(f"Linux OS Release: {platform.freedesktop_os_release()}")
+    # Android Platform
+    # conftest_logger.debug("Android Platform Information")
+    # conftest_logger.debug(f"Android Version: {platform.android_ver()}")
 
 
 def pytest_sessionfinish(
