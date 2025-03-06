@@ -8,11 +8,14 @@ This module implement main test configuration for the Sandbox.
 from itertools import product
 import json
 from pathlib import Path
+import pdb
 import platform
 from typing import Any, Literal, Mapping, Sequence
 import warnings
 
+from _pytest._code.code import ExceptionRepr
 from _pytest.fixtures import SubRequest
+from _pytest.outcomes import Exit
 from _pytest.terminal import TerminalReporter
 import pytest
 from pytest import (
@@ -21,6 +24,7 @@ from pytest import (
     Collector,
     Config,
     ExitCode,
+    ExceptionInfo,
     FixtureDef,
     Function,
     Metafunc,
@@ -999,3 +1003,105 @@ def pytest_assertion_pass(
 ##############################
 # Debugging/Interaction Hook #
 ##############################
+
+def pytest_internalerror(
+    excrepr: ExceptionRepr,
+    excinfo: ExceptionInfo[BaseException],
+) -> bool | None:
+    """Internal Error Hook
+
+    Called for internal errors.
+
+    Return True to suppress the fallback handling of printing an
+    INTERNALERROR message directly to sys.stderr.
+
+    :param excrepr: The exception representation object
+    :type excrepr: pytest.ExceptionRepr
+    :param excinfo: The exception information
+    :type excinfo: pytest.ExceptionInfo[BaseException]
+
+    :returns: Whether to suppress the fallback handling
+    :rtype: bool | None
+    """
+    conftest_logger.info("pytest Internal Error")
+    conftest_logger.debug(f"Exception Representation: {excrepr}")
+    conftest_logger.debug(f"Exception Information: {excinfo}")
+
+
+def pytest_keyboard_interrupt(
+    excinfo: ExceptionInfo[KeyboardInterrupt | Exit],
+) -> None:
+    """Keyboard Interrupt Hook
+
+    Called for keyboard interrupt.
+
+    :param excinfo: The exception information
+    :type excinfo: pytest.ExceptionInfo[KeyboardInterrupt | pytest.Exit]
+    """
+    conftest_logger.info("pytest Keyboard Interrupt")
+    conftest_logger.debug(f"Exception Information: {excinfo}")
+
+
+def pytest_exception_interact(
+    node: Item | Collector,
+    call: CallInfo[Any],
+    report: CollectReport | TestReport,
+) -> None:
+    """Exception Interaction Hook
+
+    Called when an exception was raised which can potentially be
+    interactively handled.
+
+    :param node: The item or collector
+    :type node: pytest.Item | pytest.Collector
+    :param call: The call information (contains the exception)
+    :type call: pytest.CallInfo[Any]
+    :param report: The collection or test report
+    :type report: pytest.CollectReport | pytest.TestReport
+    """
+    conftest_logger.info("pytest Exception Interaction")
+    conftest_logger.debug(f"Node: {node}")
+    conftest_logger.debug(f"Call: {call}")
+    conftest_logger.debug(f"Report: {report}")
+
+
+def pytest_enter_pdb(
+    config: Config,
+    pdb: pdb.Pdb,
+) -> None:
+    """Enter Python Debugger (PDB) Hook
+
+    Called upon pdb.set_trace().
+
+    Can be used by plugins to take special action just before the python
+    debugger enters interactive mode.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param pdb: The pdb instance
+    :type pdb: pdb.Pdb
+    """
+    conftest_logger.info("pytest Enter Python Debugger (PDB)")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Python Debugger: {pdb}")
+
+
+def pytest_leave_pdb(
+    config: Config,
+    pdb: pdb.Pdb,
+) -> None:
+    """Leave Python Debugger (PDB) Hook
+
+    Called when leaving pdb (e.g. with continue after pdb.set_trace()).
+
+    Can be used by plugins to take special action just after the python
+    debugger leaves interactive mode.
+
+    :param config: The pytest configuration object
+    :type config: pytest.Config
+    :param pdb: The pdb instance
+    :type pdb: pdb.Pdb
+    """
+    conftest_logger.info("pytest Leave Python Debugger (PDB)")
+    conftest_logger.debug(f"Configuration: {config}")
+    conftest_logger.debug(f"Python Debugger: {pdb}")
