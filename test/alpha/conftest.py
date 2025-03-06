@@ -11,30 +11,53 @@ import platform
 from typing import Any, Literal, Mapping, Sequence
 import warnings
 
+from _pytest._code.code import ExceptionInfo
 from _pytest._code.code import ExceptionRepr
+from _pytest.compat import LEGACY_PATH
+from _pytest.config import _PluggyPlugin
+from _pytest.config import Config
+from _pytest.config import ExitCode
+from _pytest.config import PytestPluginManager
+from _pytest.config.argparsing import Parser
+from _pytest.fixtures import FixtureDef
 from _pytest.fixtures import SubRequest
+from _pytest.main import Session
+from _pytest.nodes import Collector
+from _pytest.nodes import Item
 from _pytest.outcomes import Exit
+from _pytest.python import Class
+from _pytest.python import Function
+from _pytest.python import Metafunc
+from _pytest.python import Module
+from _pytest.reports import CollectReport
+from _pytest.reports import TestReport
+from _pytest.runner import CallInfo
 from _pytest.terminal import TerminalReporter
-import pytest
-from pytest import (
-    Class,
-    CollectReport,
-    Collector,
-    Config,
-    ExitCode,
-    ExceptionInfo,
-    FixtureDef,
-    Function,
-    Metafunc,
-    Module,
-    Parser,
-    PytestPluginManager,
-    Session,
-    Item,
-    CallInfo,
-    TestReport,
-    TestShortLogReport,
-)
+from _pytest.terminal import TestShortLogReport
+
+# from _pytest._code.code import ExceptionRepr
+# from _pytest.fixtures import SubRequest
+# from _pytest.outcomes import Exit
+# from _pytest.terminal import TerminalReporter
+# from pytest import (
+#     Class,
+#     CollectReport,
+#     Collector,
+#     Config,
+#     ExitCode,
+#     ExceptionInfo,
+#     FixtureDef,
+#     Function,
+#     Metafunc,
+#     Module,
+#     Parser,
+#     PytestPluginManager,
+#     Session,
+#     Item,
+#     CallInfo,
+#     TestReport,
+#     TestShortLogReport,
+# )
 
 import tealogger
 
