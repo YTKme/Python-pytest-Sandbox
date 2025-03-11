@@ -339,9 +339,9 @@ def pytest_sessionfinish(
 #     conftest_logger.debug(f"Manager: {manager}")
 
 
-####################
+###################
 # Collection Hook #
-####################
+###################
 
 def pytest_collection(session: Session) -> object | None:
     """Collection Hook
@@ -560,10 +560,10 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
     """
     conftest_logger.info("pytest Generate Test")
     conftest_logger.debug(f"Metafunc: {metafunc}")
-    conftest_logger.debug(f"Module Name: {metafunc.module.__name__}")
-    conftest_logger.debug(f"Class Name: {metafunc.cls.__name__}")
-    conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
-    conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
+    # conftest_logger.debug(f"Module Name: {metafunc.module.__name__}")
+    # conftest_logger.debug(f"Class Name: {metafunc.cls.__name__}")
+    # conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
+    # conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
 
 
 def pytest_make_parametrize_id(
