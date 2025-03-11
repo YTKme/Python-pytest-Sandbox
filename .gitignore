@@ -9,6 +9,9 @@ coverage.json
 # Ruff
 .ruff_cache
 
+# uv
+uv.lock
+
 #
 # Python
 #
