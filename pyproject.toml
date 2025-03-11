@@ -49,12 +49,14 @@ develop = [
     "pytest-cov",
     "pytest",
     "ruff",
+    "tealogger",
     "twine"
 ]
 test = [
     "pytest-cov",
     "pytest",
     "ruff",
+    "tealogger"
 ]
 
 [project.urls]
