@@ -1,6 +1,6 @@
 {
-  "test_mathematics_class": {
-    "TestMathematicsClass": {
+  "test_beta_mathematics_class": {
+    "TestBetaMathematicsClass": {
       "test_add": {
         "strategy": "auto",
         "data": {

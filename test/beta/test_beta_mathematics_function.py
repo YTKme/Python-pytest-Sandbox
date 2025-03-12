@@ -1,6 +1,6 @@
 """
-Test Mathematics Function
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Test Beta Mathematics Function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module test functionality of the Mathematics module on a function
 level.

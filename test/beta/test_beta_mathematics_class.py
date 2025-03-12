@@ -1,6 +1,6 @@
 """
-Test Mathematics Class
-~~~~~~~~~~~~~~~~~~~~~~
+Test Beta Mathematics Class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module test functionality of the Mathematics module on a class
 level.
@@ -25,7 +25,7 @@ tealogger.configure(
 test_logger = tealogger.get_logger(__name__)
 
 
-class TestMathematicsClass:
+class TestBetaMathematicsClass:
     """Test Mathematics"""
 
     def test_add(
