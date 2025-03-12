@@ -581,11 +581,9 @@ def pytest_generate_tests(metafunc: Metafunc):
     # conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
     # conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
 
-    # Parse metafunc name
-    module_name = metafunc.module.__name__.split(".")[-1]
+    # Parse metafunc module
+    module_name = str(metafunc.module.__name__).split(".")[-1]
     module_path = Path(metafunc.module.__file__).parent
-    # class_name = metafunc.cls.__name__
-    function_name = metafunc.function.__name__
 
     # Load the test data
     test_data_path = None
@@ -608,6 +606,9 @@ def pytest_generate_tests(metafunc: Metafunc):
             conftest_logger.warning(f"No Test Data Path Set: {module_name}")
             conftest_logger.error(f"Error: {error}")
             pytest.skip(f"Skip No Test Data Path Set: {module_name}")
+
+        class_name = metafunc.cls.__name__
+        function_name = metafunc.function.__name__
 
         ################
         # Module Level #
