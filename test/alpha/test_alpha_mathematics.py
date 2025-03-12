@@ -1,6 +1,6 @@
 """
-Test Mathematics
-~~~~~~~~~~~~~~~~
+Test Alpha Mathematics
+~~~~~~~~~~~~~~~~~~~~~~
 
 This module test functionality for the Mathematics module.
 """
@@ -24,7 +24,7 @@ tealogger.configure(
 test_logger = tealogger.get_logger(__name__)
 
 
-class TestMathematics:
+class TestAlphaMathematics:
     """Test Mathematics"""
 
     @pytest.mark.parametrize(
