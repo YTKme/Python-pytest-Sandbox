@@ -146,7 +146,7 @@ def pytest_cmdline_main(config: Config) -> ExitCode | int | None:
     :rtype: pytest.ExitCode | int | None
     """
     conftest_logger.info("pytest Command Line Main")
-    conftest_logger.debug(f"Config: {config}")
+    conftest_logger.debug(f"Configuration: {config}")
 
 
 #######################
@@ -208,7 +208,7 @@ def pytest_configure(config: Config) -> None:
     :type config: pytest.Config
     """
     conftest_logger.info("pytest Configure")
-    conftest_logger.debug(f"Config: {config}")
+    conftest_logger.debug(f"Configuration: {config}")
 
 
 def pytest_unconfigure(config: Config) -> None:
@@ -224,7 +224,7 @@ def pytest_unconfigure(config: Config) -> None:
     :type config: pytest.Config
     """
     conftest_logger.info("pytest Unconfigure")
-    conftest_logger.debug(f"Config: {config}")
+    conftest_logger.debug(f"Configuration: {config}")
 
 
 def pytest_sessionstart(session: Session) -> None:
@@ -406,7 +406,7 @@ def pytest_ignore_collect(
     """
     conftest_logger.info("pytest Ignore Collect")
     conftest_logger.debug(f"Collection Path: {collection_path}")
-    conftest_logger.debug(f"Config: {config}")
+    conftest_logger.debug(f"Configuration: {config}")
 
 
 def pytest_collect_directory(
