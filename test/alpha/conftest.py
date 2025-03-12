@@ -15,8 +15,8 @@ import warnings
 
 from _pytest._code.code import ExceptionInfo
 from _pytest._code.code import ExceptionRepr
-from _pytest.compat import LEGACY_PATH
-from _pytest.config import _PluggyPlugin
+# from _pytest.compat import LEGACY_PATH
+# from _pytest.config import _PluggyPlugin
 from _pytest.config import Config
 from _pytest.config import ExitCode
 from _pytest.config import PytestPluginManager
