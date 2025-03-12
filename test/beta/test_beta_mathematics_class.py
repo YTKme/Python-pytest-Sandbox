@@ -9,7 +9,6 @@ level.
 from numbers import Number
 from pathlib import Path
 
-import pytest
 import tealogger
 
 from pytest_sandbox.beta.mathematics import Mathematics
