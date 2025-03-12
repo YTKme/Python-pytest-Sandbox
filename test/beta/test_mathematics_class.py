@@ -1,16 +1,18 @@
 """
-Test Mathematics
-~~~~~~~~~~~~~~~~
+Test Mathematics Class
+~~~~~~~~~~~~~~~~~~~~~~
 
-This module test functionality for the Mathematics module.
+This module test functionality of the Mathematics module on a class
+level.
 """
 
 from numbers import Number
 from pathlib import Path
 
+import pytest
 import tealogger
 
-from pytest_sandbox.alpha.mathematics import Mathematics
+from pytest_sandbox.beta.mathematics import Mathematics
 
 
 CURRENT_MODULE_PATH = Path(__file__).parent.expanduser().resolve()
@@ -23,9 +25,13 @@ tealogger.configure(
 test_logger = tealogger.get_logger(__name__)
 
 
-class TestMathematics:
+class TestMathematicsClass:
     """Test Mathematics"""
 
+    @pytest.mark.parametrize(
+        "first_number,second_number,expected",
+        [(3, 5, 8)]
+    )
     def test_add(
         self,
         first_number: Number,
@@ -53,6 +59,10 @@ class TestMathematics:
             second_number=second_number
         ) == expected
 
+    @pytest.mark.parametrize(
+        "first_number,second_number,expected",
+        [(3, 5, -2)]
+    )
     def test_subtract(
         self,
         first_number: Number,
