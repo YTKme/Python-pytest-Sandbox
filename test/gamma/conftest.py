@@ -18,8 +18,8 @@ import warnings
 import pytest
 from _pytest._code.code import ExceptionInfo
 from _pytest._code.code import ExceptionRepr
-from _pytest.compat import LEGACY_PATH
-from _pytest.config import _PluggyPlugin
+# from _pytest.compat import LEGACY_PATH
+# from _pytest.config import _PluggyPlugin
 from _pytest.config import Config
 from _pytest.config import ExitCode
 from _pytest.config import PytestPluginManager
@@ -342,9 +342,9 @@ def pytest_sessionfinish(
 #     conftest_logger.debug(f"Manager: {manager}")
 
 
-####################
+###################
 # Collection Hook #
-####################
+###################
 
 def pytest_collection(session: Session) -> object | None:
     """Collection Hook
@@ -548,11 +548,17 @@ def pytest_pycollect_makeitem(
 def pytest_generate_tests(metafunc: Metafunc):
     """Generate Test Hook
 
+    Generate (multiple) parametrized calls to a test function.
+
     Dynamically parametrize test(s) using test data from a JSON
     (JavaScript Object Notation) file. The data will align with the
     class and function name of the test(s).
 
-    Example:
+    conftest: Any conftest file can implement this hook. For a given
+        function definition, only conftest files in the functions's
+        directory and its parent directories are consulted.
+
+    Example Class:
         {
             "module_name":
                 "ClassName": {
@@ -570,7 +576,22 @@ def pytest_generate_tests(metafunc: Metafunc):
             ...
         }
 
-    :param metafunc: Objects passed to the pytest_generate_tests hook
+    Example Function:
+        {
+            "module_name":
+                "function_name": {
+                    "parameter": [
+                        "expression",
+                        ...
+                    ],
+                    ...
+                },
+                ...
+            },
+            ...
+        }
+
+    :param metafunc: The Metafunc helper for the test function
     :type metafunc: pytest.Metafunc
     """
     conftest_logger.info("pytest Generate Test")
@@ -582,7 +603,7 @@ def pytest_generate_tests(metafunc: Metafunc):
     # conftest_logger.debug(f"Fixture Names: {metafunc.fixturenames}")
 
     # Parse metafunc module
-    module_name = str(metafunc.module.__name__).split(".")[-1]
+    module_name = metafunc.module.__name__
     module_path = Path(metafunc.module.__file__).parent
 
     # Load the test data
@@ -607,18 +628,25 @@ def pytest_generate_tests(metafunc: Metafunc):
             conftest_logger.error(f"Error: {error}")
             pytest.skip(f"Skip No Test Data Path Set: {module_name}")
 
-        class_name = metafunc.cls.__name__
-        function_name = metafunc.function.__name__
+        class_condition = [
+            module_name in data,
+            # Part of a class
+            # The class name is in the test data
+            metafunc.cls.__name__ in data[module_name]
+            if metafunc.cls else False,
+            # Part of a function (should always be true)
+            # The function name is in the test data
+            metafunc.function.__name__ in data[module_name][metafunc.cls.__name__]
+            if metafunc.cls and metafunc.function else False,
+        ]
 
-        ################
-        # Module Level #
-        ################
-        if (
-            module_name in data
-            and class_name in data[module_name]
-            and function_name in data[module_name][class_name]
-        ):
-            conftest_logger.debug("Generate Module Test")
+        ####################
+        # Class Level Test #
+        ####################
+        if all(class_condition):
+            conftest_logger.debug("Generate Class Test")
+            class_name = metafunc.cls.__name__
+            function_name = metafunc.function.__name__
             function_data = data[module_name][class_name][function_name]
             test_data = function_data["data"]
             # conftest_logger.debug(f"Test Data: {test_data}")
@@ -677,18 +705,6 @@ def pytest_generate_tests(metafunc: Metafunc):
                 argnames=argument_name_list,
                 argvalues=argument_value_list,
             )
-
-        ###############
-        # Class Level #
-        ###############
-        elif class_name in data:
-            conftest_logger.debug("Generate Class Test")
-
-        ##################
-        # Function Level #
-        ##################
-        elif function_name in data:
-            conftest_logger.debug("Generate Function Test")
 
 
 def pytest_make_parametrize_id(
