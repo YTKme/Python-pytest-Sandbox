@@ -342,9 +342,9 @@ def pytest_sessionfinish(
 #     conftest_logger.debug(f"Manager: {manager}")
 
 
-####################
+###################
 # Collection Hook #
-####################
+###################
 
 def pytest_collection(session: Session) -> object | None:
     """Collection Hook
@@ -548,9 +548,15 @@ def pytest_pycollect_makeitem(
 def pytest_generate_tests(metafunc: Metafunc):
     """Generate Test Hook
 
+    Generate (multiple) parametrized calls to a test function.
+
     Dynamically parametrize test(s) using test data from a JSON
     (JavaScript Object Notation) file. The data will align with the
     class and function name of the test(s).
+
+    conftest: Any conftest file can implement this hook. For a given
+        function definition, only conftest files in the functions's
+        directory and its parent directories are consulted.
 
     Example:
         {
@@ -570,7 +576,7 @@ def pytest_generate_tests(metafunc: Metafunc):
             ...
         }
 
-    :param metafunc: Objects passed to the pytest_generate_tests hook
+    :param metafunc: The Metafunc helper for the test function
     :type metafunc: pytest.Metafunc
     """
     conftest_logger.info("pytest Generate Test")
