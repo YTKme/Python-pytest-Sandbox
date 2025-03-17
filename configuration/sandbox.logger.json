@@ -86,6 +86,15 @@
                 "stderr",
                 "stdout"
             ]
+        },
+        "test_gamma_mathematics_function": {
+            "level": "DEBUG",
+            "propagate": false,
+            "filters": [],
+            "handlers": [
+                "stderr",
+                "stdout"
+            ]
         }
     },
     "root": {
