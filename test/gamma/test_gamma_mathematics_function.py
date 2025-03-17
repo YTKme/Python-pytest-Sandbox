@@ -8,6 +8,7 @@ level.
 
 from numbers import Number
 from pathlib import Path
+import time
 
 import pytest
 import tealogger
@@ -33,6 +34,7 @@ def test_add(
     first_number: Number,
     second_number: Number,
     expected: Number,
+    add_fixture,
 ) -> None:
     """Test add method
 
@@ -54,3 +56,18 @@ def test_add(
         first_number=first_number,
         second_number=second_number
     ) == expected
+
+
+@pytest.fixture(scope="module")
+def add_fixture():
+    """Fixture Add"""
+
+    test_logger.info("Add Fixture")
+
+    test_logger.warning("Sleep 3 Second")
+    time.sleep(3)
+
+    yield
+
+    test_logger.warning("Sleep 3 Second")
+    time.sleep(3)
