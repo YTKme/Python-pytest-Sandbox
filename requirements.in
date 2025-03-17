@@ -1,5 +1,7 @@
 pytest
 pytest-cov
+pytest-xdist
+pytest-xdist[psutil]
 ruff
 tealogger
 tox
