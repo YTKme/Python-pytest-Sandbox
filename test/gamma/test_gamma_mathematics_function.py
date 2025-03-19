@@ -34,7 +34,6 @@ def test_add(
     first_number: Number,
     second_number: Number,
     expected: Number,
-    add_fixture,
 ) -> None:
     """Test add method
 
@@ -58,16 +57,16 @@ def test_add(
     ) == expected
 
 
-@pytest.fixture(scope="module")
-def add_fixture():
-    """Fixture Add"""
+# @pytest.fixture(scope="module", autouse=True)
+# def add_fixture():
+#     """Fixture Add"""
 
-    test_logger.info("Add Fixture")
+#     test_logger.info("Add Fixture")
 
-    test_logger.warning("Sleep 3 Second")
-    time.sleep(3)
+#     test_logger.warning("Sleep 3 Second")
+#     time.sleep(3)
 
-    yield
+#     yield
 
-    test_logger.warning("Sleep 3 Second")
-    time.sleep(3)
+#     test_logger.warning("Sleep 3 Second")
+#     time.sleep(3)
