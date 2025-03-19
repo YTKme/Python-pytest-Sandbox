@@ -2,6 +2,7 @@
   "test_gamma_mathematics_class": {
     "TestGammaMathematicsClass": {
       "test_add": {
+        "name": "TEST_ADD-",
         "strategy": "auto",
         "data": {
           "first_number": [
