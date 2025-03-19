@@ -596,7 +596,7 @@ def pytest_generate_tests(metafunc: Metafunc):
     """
     conftest_logger.info("pytest Generate Test")
     conftest_logger.debug(f"Metafunc: {metafunc}")
-    conftest_logger.debug(f"Metafunc Dictionary: {metafunc.__dict__}")
+    # conftest_logger.debug(f"Metafunc Dictionary: {metafunc.__dict__}")
     # conftest_logger.debug(f"Module Name: {metafunc.module.__name__}")
     # conftest_logger.debug(f"Class Name: {metafunc.cls.__name__}")
     # conftest_logger.debug(f"Function Name: {metafunc.function.__name__}")
@@ -653,6 +653,8 @@ def pytest_generate_tests(metafunc: Metafunc):
 
             argument_name_list = test_data.keys()
             argument_value_list = test_data.values()
+            id_list = None
+            # id_list = []
 
             strategy = function_data["strategy"]
             # conftest_logger.debug(f"Strategy: {strategy}")
@@ -664,6 +666,18 @@ def pytest_generate_tests(metafunc: Metafunc):
                 case _:
                     # Create a zip of the argument value to test
                     argument_value_list = list(zip(*argument_value_list))
+
+            conftest_logger.warning(f"Argument Value List: {argument_value_list}")
+
+            # NOTE: Default
+            # for argument_value_tuple in argument_value_list:
+            #     id_list.append("-".join(map(str, argument_value_tuple)))
+
+            # NOTE: There maybe a better way for this?
+            # if "name" in function_data:
+            #     id_list.extend(
+            #         [function_data["name"]] * len(argument_value_list)
+            #     )
 
             # Exclude
             if (
@@ -687,7 +701,7 @@ def pytest_generate_tests(metafunc: Metafunc):
                 # conftest_logger.debug(f"Exclude Value List: {exclude_value_list}")
 
                 # Remove the exclude value from the argument value
-                # NOTE: Not sure if this is best implementation
+                # NOTE: Not sure if this is best implementation?
                 argument_value_list = [
                     argument_value
                     for argument_value in argument_value_list
@@ -704,6 +718,7 @@ def pytest_generate_tests(metafunc: Metafunc):
             metafunc.parametrize(
                 argnames=argument_name_list,
                 argvalues=argument_value_list,
+                ids=id_list,
             )
 
 
@@ -985,6 +1000,7 @@ def pytest_runtest_teardown(item: Item, nextitem: Item | None) -> None:
     conftest_logger.debug(f"Next Item: {nextitem}")
 
 
+@pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | None:
     """Run Test Make Report
 
@@ -1007,7 +1023,13 @@ def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | 
     """
     conftest_logger.info("pytest Run Test Make Report")
     conftest_logger.debug(f"Item: {item}")
+    conftest_logger.warning(f"Item Dictionary: {item.name}")
     conftest_logger.debug(f"Call: {call}")
+
+    outcome = yield
+    result = outcome.get_result()
+    if result.when == "call":
+        conftest_logger.warning(f"Result Outcome: {result.outcome}")
 
 
 def pytest_pyfunc_call(pyfuncitem: Function) -> None:
