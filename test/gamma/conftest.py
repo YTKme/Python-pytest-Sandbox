@@ -15,6 +15,7 @@ import platform
 from typing import Any, Literal, Mapping, Sequence
 import warnings
 
+from pluggy import Result
 import pytest
 from _pytest._code.code import ExceptionInfo
 from _pytest._code.code import ExceptionRepr
@@ -1023,13 +1024,13 @@ def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | 
     """
     conftest_logger.info("pytest Run Test Make Report")
     conftest_logger.debug(f"Item: {item}")
-    conftest_logger.warning(f"Item Dictionary: {item.name}")
     conftest_logger.debug(f"Call: {call}")
 
-    outcome = yield
-    result = outcome.get_result()
+    outcome: Result = yield
+    result: TestReport = outcome.get_result()
     if result.when == "call":
-        conftest_logger.warning(f"Result Outcome: {result.outcome}")
+        conftest_logger.debug(f"Item Name: {item.name}")
+        conftest_logger.debug(f"Result Outcome: {result.outcome}")
 
 
 def pytest_pyfunc_call(pyfuncitem: Function) -> None:
