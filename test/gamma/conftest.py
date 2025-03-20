@@ -1316,6 +1316,15 @@ def pytest_terminal_summary(
     conftest_logger.debug(f"Exit Status: {exitstatus}")
     conftest_logger.debug(f"Configuration: {config}")
 
+    status_passed = len(terminalreporter.stats.get('passed', []))
+    status_failed = len(terminalreporter.stats.get('failed', []))
+    conftest_logger.debug(
+        f"Terminal Report Status Passed: {status_passed}"
+    )
+    conftest_logger.debug(
+        f"Terminal Report Status Failed: {status_failed}"
+    )
+
 
 def pytest_fixture_setup(
     fixturedef: FixtureDef[Any],
