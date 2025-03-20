@@ -8,7 +8,6 @@ level.
 
 from numbers import Number
 from pathlib import Path
-import time
 
 import pytest
 import tealogger
