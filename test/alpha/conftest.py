@@ -853,7 +853,7 @@ def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | 
     Stops at first non-None result.
 
     conftest: Any conftest file can implement this hook. For a given
-        item, only conftest files in the item’s directory and its parent
+        item, only conftest files in the item's directory and its parent
         directories are consulted.
 
     :param item: The item
