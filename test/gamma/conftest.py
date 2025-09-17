@@ -668,8 +668,6 @@ def pytest_generate_tests(metafunc: Metafunc):
                     # Create a zip of the argument value to test
                     argument_value_list = list(zip(*argument_value_list))
 
-            conftest_logger.warning(f"Argument Value List: {argument_value_list}")
-
             # NOTE: Default
             # for argument_value_tuple in argument_value_list:
             #     id_list.append("-".join(map(str, argument_value_tuple)))
@@ -896,7 +894,7 @@ def pytest_runtest_logstart(
     item.
 
     conftest: Any conftest file can implement this hook. For a given
-        item, only conftest files in the item’s directory and its parent
+        item, only conftest files in the item's directory and its parent
         directories are consulted.
 
     :param nodeid: Full node ID of the item
@@ -920,7 +918,7 @@ def pytest_runtest_logfinish(
     Called at the end of running the runtest protocol for a single item.
 
     conftest: Any conftest file can implement this hook. For a given
-        item, only conftest files in the item’s directory and its parent
+        item, only conftest files in the item's directory and its parent
         directories are consulted.
 
     :param nodeid: Full node ID of the item
@@ -941,12 +939,12 @@ def pytest_runtest_setup(item: Item) -> None:
     Called to perform the setup phase for a test item.
 
     The default implementation runs setup() on item and all of its
-    parents (which haven’t been setup yet). This includes obtaining the
-    values of fixtures required by the item (which haven’t been obtained
+    parents (which haven't been setup yet). This includes obtaining the
+    values of fixtures required by the item (which haven't been obtained
     yet).
 
     conftest: Any conftest file can implement this hook. For a given
-        item, only conftest files in the item’s directory and its parent
+        item, only conftest files in the item's directory and its parent
         directories are consulted.
 
     :param item: The item
@@ -1011,7 +1009,7 @@ def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | 
     Stops at first non-None result.
 
     conftest: Any conftest file can implement this hook. For a given
-        item, only conftest files in the item’s directory and its parent
+        item, only conftest files in the item's directory and its parent
         directories are consulted.
 
     :param item: The item
