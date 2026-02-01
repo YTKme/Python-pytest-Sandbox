@@ -1,7 +1,7 @@
 # pytest Configuration
 # pytest.ini
 # https://docs.pytest.org/en/stable/how-to/output.html
-#
+
 # --showlocals      # show local variables in tracebacks
 # -l                # show local variables (shortcut)
 # --capture=tee-sys # capture to logs but also output to sys level streams
@@ -11,40 +11,45 @@
 # --junit-xml=path  # create junit-xml style report file at given path
 
 [pytest]
-minversion = 8.0.0
+minversion = '9.0.0'
 
-pythonpath = .
+pythonpath = ['.']
 
 # Hook
-#enable_assertion_pass_hook=true
+# enable_assertion_pass_hook=true
 
 # Log
-#log_cli = true
-#log_cli_level = DEBUG
+# log_cli = true
+# log_cli_level = DEBUG
 
 # JUnit
-junit_logging = all
+# junit_logging = "all"
 
 # Add Option
-addopts =
-    --showlocals
-    --capture=tee-sys
-    --tb=long
-    -vvvvv
-    --durations=0
-    --junit-xml=junit-report.xml
+addopts = [
+    '--showlocals',
+    '--capture=tee-sys',
+    '--tb=long',
+    '-vvvvv',
+    '--durations=0',
+    # '--junit-xml=junit-report.xml',
     # Coverage
-    --cov=test
-    #--cov-report=html
-    --cov-report=term-missing
+    '--cov=test',
+    # '--cov-report=html',
+    # '--cov-report=lcov',
+    '--cov-report=term-missing',
+]
 
 # Test Path
-testpaths =
-    test/alpha
-    test/beta
-    test/gamma
+testpaths = ['test']
 
 # https://github.com/pytest-dev/pytest-asyncio/issues/924
 # https://pytest-asyncio.readthedocs.io/en/latest/reference/configuration.html
-# asyncio_mode=auto
-# asyncio_default_fixture_loop_scope="function"
+asyncio_mode = 'auto'
+asyncio_default_fixture_loop_scope = 'function'
+
+markers = [
+    "alpha: mark a test as alpha test.",
+    "beta: mark a test as beta test.",
+    "gamma: mark a test as gamma test.",
+]
