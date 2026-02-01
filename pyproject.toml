@@ -1,28 +1,15 @@
 [build-system]
-requires = [
-    "setuptools",
-    "setuptools-scm",
-    "poetry-core",
-    "poetry-core>=1.0.0",
-]
-build-backend = "setuptools.build_meta"
-# build-backend = "poetry.core.masonry.api"
+requires = ["uv_build >= 0.9.21, <0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = ["pytest_sandbox"]
+module-root = ""
 
 [project]
 name = "pytest-sandbox"
-dynamic = [
-    "version",
-    "readme"
-]
-dependencies = [
-    "pytest",
-    "pytest-cov",
-    "tealogger"
-]
-requires-python = ">= 3.10"
-authors = [
-    {name = "YTKme"},
-]
+version = "0.0.11.dev20260118"
+requires-python = ">= 3.11"
 description = "pytest Sandbox"
 license = {file = "LICENSE"}
 keywords = [
@@ -43,20 +30,21 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-[project.optional-dependencies]
-develop = [
-    "build",
-    "pytest-cov",
-    "pytest",
-    "ruff",
-    "tealogger",
-    "twine"
-]
-test = [
-    "pytest-cov",
-    "pytest",
-    "ruff",
+authors = [{ name = "YTKme", email = "YTKme@Outlook.com" }]
+maintainers = [{ name = "YTKme", email = "YTKme@Outlook.com" }]
+
+dependencies = [
     "tealogger"
+]
+
+[dependency-groups]
+develop = ["ruff>=0.14"]
+test = [
+  "pytest>=9.0",
+  "pytest-asyncio>=1.3",
+  "pytest-cov>=7.0",
+  "pytest-mock>=3.15",
+  "tox>=4.34",
 ]
 
 [project.urls]
