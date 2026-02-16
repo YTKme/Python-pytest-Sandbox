@@ -14,21 +14,17 @@ import tealogger
 
 from pytest_sandbox.beta.mathematics import Mathematics
 
-
 CURRENT_MODULE_PATH = Path(__file__).parent.expanduser().resolve()
 
 # Configure conftest_logger
 tealogger.configure(
-    configuration=CURRENT_MODULE_PATH.parents[1]
-    / "configuration/sandbox.logger.json"
+    configuration=CURRENT_MODULE_PATH.parents[1] / "configuration/sandbox.logger.json"
 )
 test_logger = tealogger.get_logger(__name__)
 
 
-@pytest.mark.parametrize(
-    "first_number,second_number,expected",
-    [(3, 5, 8)]
-)
+@pytest.mark.beta
+@pytest.mark.parametrize("first_number,second_number,expected", [(3, 5, 8)])
 def test_add(
     first_number: Number,
     second_number: Number,
@@ -50,7 +46,7 @@ def test_add(
 
     mathematics = Mathematics()
 
-    assert mathematics.add(
-        first_number=first_number,
-        second_number=second_number
-    ) == expected
+    assert (
+        mathematics.add(first_number=first_number, second_number=second_number)
+        == expected
+    )
