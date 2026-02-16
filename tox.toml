@@ -1,0 +1,15 @@
+# tox Configuration
+
+requires = ["tox>=4"]
+env_list = ["3.12"]
+
+[env_run_base]
+description = "Run Unit Test"
+deps = [
+    "pytest>=9.0",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+]
+# commands = [["pytest", "test/", "-k", "TestPlatform and test_create_mock"]]
+commands = [["pytest", "test/"]]
