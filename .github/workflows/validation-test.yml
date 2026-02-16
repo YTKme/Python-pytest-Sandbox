@@ -31,9 +31,10 @@ jobs:
       run: |
         uv sync --locked --all-groups
 
+    - uses: astral-sh/ruff-action@v3
     - name: Run ruff check
       run: |
-        ruff check $(git ls-files '*.py')
+        ruff check
 
     - name: Run pytest
       run: |
