@@ -7,36 +7,27 @@ This module implement main test configuration for the Sandbox.
 pytest Hooks Reference: `Link <https://docs.pytest.org/en/stable/reference/reference.html#hooks>`_
 """
 
-from pathlib import Path
 import pdb
 import platform
-from typing import Any, Literal, Mapping, Sequence
 import warnings
+from pathlib import Path
+from typing import Any, Literal, Mapping, Sequence
 
-from _pytest._code.code import ExceptionInfo
-from _pytest._code.code import ExceptionRepr
+import tealogger
+from _pytest._code.code import ExceptionInfo, ExceptionRepr
+from _pytest.config import Config, ExitCode, PytestPluginManager
+from _pytest.config.argparsing import Parser
+from _pytest.fixtures import FixtureDef, SubRequest
+from _pytest.main import Session
+from _pytest.nodes import Collector, Item
+from _pytest.outcomes import Exit
+from _pytest.python import Class, Function, Metafunc, Module
+from _pytest.reports import CollectReport, TestReport
+from _pytest.runner import CallInfo
+from _pytest.terminal import TerminalReporter, TestShortLogReport
+
 # from _pytest.compat import LEGACY_PATH
 # from _pytest.config import _PluggyPlugin
-from _pytest.config import Config
-from _pytest.config import ExitCode
-from _pytest.config import PytestPluginManager
-from _pytest.config.argparsing import Parser
-from _pytest.fixtures import FixtureDef
-from _pytest.fixtures import SubRequest
-from _pytest.main import Session
-from _pytest.nodes import Collector
-from _pytest.nodes import Item
-from _pytest.outcomes import Exit
-from _pytest.python import Class
-from _pytest.python import Function
-from _pytest.python import Metafunc
-from _pytest.python import Module
-from _pytest.reports import CollectReport
-from _pytest.reports import TestReport
-from _pytest.runner import CallInfo
-from _pytest.terminal import TerminalReporter
-from _pytest.terminal import TestShortLogReport
-
 # from _pytest._code.code import ExceptionRepr
 # from _pytest.fixtures import SubRequest
 # from _pytest.outcomes import Exit
@@ -61,14 +52,11 @@ from _pytest.terminal import TestShortLogReport
 #     TestShortLogReport,
 # )
 
-import tealogger
-
 CURRENT_MODULE_PATH = Path(__file__).parent.expanduser().resolve()
 
 # Configure conftest_logger
 tealogger.configure(
-    configuration=CURRENT_MODULE_PATH.parents[1]
-    / "configuration/sandbox.logger.json"
+    configuration=CURRENT_MODULE_PATH.parents[1] / "configuration/sandbox.logger.json"
 )
 conftest_logger = tealogger.get_logger(__name__)
 
@@ -77,10 +65,11 @@ conftest_logger = tealogger.get_logger(__name__)
 # Bootstrapping Hook #
 ######################
 
+
 def pytest_load_initial_conftests(
     early_config: Config,
     parser: Parser,
-    args: list[str]
+    args: list[str],
 ) -> None:
     """Load Initial Test Configuration Hook
 
@@ -104,7 +93,7 @@ def pytest_load_initial_conftests(
 
 def pytest_cmdline_parse(
     pluginmanager: PytestPluginManager,
-    args: list[str]
+    args: list[str],
 ) -> Config | None:
     """Parse Command Line Hook
 
@@ -153,9 +142,10 @@ def pytest_cmdline_main(config: Config) -> ExitCode | int | None:
 # Initialization Hook #
 #######################
 
+
 def pytest_addoption(
     parser: Parser,
-    pluginmanager: PytestPluginManager
+    pluginmanager: PytestPluginManager,
 ) -> None:
     """Register Command Line Option(s)
 
@@ -289,7 +279,7 @@ def pytest_sessionstart(session: Session) -> None:
 
 def pytest_sessionfinish(
     session: Session,
-    exitstatus: int | ExitCode
+    exitstatus: int | ExitCode,
 ) -> None:
     """Finish Session
 
@@ -343,6 +333,7 @@ def pytest_sessionfinish(
 # Collection Hook #
 ###################
 
+
 def pytest_collection(session: Session) -> object | None:
     """Collection Hook
 
@@ -370,7 +361,7 @@ def pytest_collection(session: Session) -> object | None:
 def pytest_ignore_collect(
     collection_path: Path,
     # path: LEGACY_PATH,
-    config: Config
+    config: Config,
 ) -> bool | None:
     """Ignore Collect Hook
 
@@ -411,7 +402,7 @@ def pytest_ignore_collect(
 
 def pytest_collect_directory(
     path: Path,
-    parent: Collector
+    parent: Collector,
 ) -> Collector | None:
     """Collect Directory Hook
 
@@ -446,7 +437,7 @@ def pytest_collect_directory(
 def pytest_collect_file(
     file_path: Path,
     # path: LEGACY_PATH,
-    parent: Collector
+    parent: Collector,
 ) -> Collector | None:
     """Collect File Hook
 
@@ -479,7 +470,7 @@ def pytest_collect_file(
 def pytest_pycollect_makemodule(
     module_path: Path,
     # path: LEGACY_PATH,
-    parent: Collector
+    parent: Collector,
 ) -> Module | None:
     """Make Module Hook
 
@@ -513,7 +504,7 @@ def pytest_pycollect_makemodule(
 def pytest_pycollect_makeitem(
     collector: Module | Class,
     name: str,
-    obj: object
+    obj: object,
 ) -> None | Item | Collector | list[Item | Collector]:
     """Make Item Hook
 
@@ -569,7 +560,7 @@ def pytest_generate_tests(metafunc: Metafunc) -> None:
 def pytest_make_parametrize_id(
     config: Config,
     val: object,
-    argname: str
+    argname: str,
 ) -> str | None:
     """Make Parametrize ID Hook
 
@@ -626,7 +617,7 @@ def pytest_markeval_namespace(config: Config) -> dict[str, Any]:
 def pytest_collection_modifyitems(
     session: Session,
     config: Config,
-    items: list[Item]
+    items: list[Item],
 ) -> None:
     """Collection Modify Items Hook
 
@@ -671,6 +662,7 @@ def pytest_collection_finish(session: Session) -> None:
 # Test Running (runtest) Hook #
 ###############################
 
+
 def pytest_runtestloop(session: Session) -> object | None:
     """Run Test Loop Hook
 
@@ -704,7 +696,7 @@ def pytest_runtestloop(session: Session) -> object | None:
 
 def pytest_runtest_protocol(
     item: Item,
-    nextitem: Item | None
+    nextitem: Item | None,
 ) -> object | None:
     """Run Test Protocol Hook
 
@@ -731,7 +723,7 @@ def pytest_runtest_protocol(
 
 def pytest_runtest_logstart(
     nodeid: str,
-    location: tuple[str, int | None, str]
+    location: tuple[str, int | None, str],
 ) -> None:
     """Run Test Log Start Hook
 
@@ -756,7 +748,7 @@ def pytest_runtest_logstart(
 
 def pytest_runtest_logfinish(
     nodeid: str,
-    location: tuple[str, int | None, str]
+    location: tuple[str, int | None, str],
 ) -> None:
     """Run Test Log Finish Hook
 
@@ -817,7 +809,10 @@ def pytest_runtest_call(item: Item) -> None:
     conftest_logger.debug(f"Item: {item}")
 
 
-def pytest_runtest_teardown(item: Item, nextitem: Item | None) -> None:
+def pytest_runtest_teardown(
+    item: Item,
+    nextitem: Item | None,
+) -> None:
     """Run Test Teardown Hook
 
     Called to perform the teardown phase for a test item.
@@ -844,7 +839,10 @@ def pytest_runtest_teardown(item: Item, nextitem: Item | None) -> None:
     conftest_logger.debug(f"Next Item: {nextitem}")
 
 
-def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport | None:
+def pytest_runtest_makereport(
+    item: Item,
+    call: CallInfo[None],
+) -> TestReport | None:
     """Run Test Make Report
 
     Called to create a pytest TestReport for each of the setup, call
@@ -891,6 +889,7 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> None:
 # Reporting Hook #
 ##################
 
+
 def pytest_collectstart(collector: Collector) -> None:
     """Collect Start Hook
 
@@ -908,7 +907,7 @@ def pytest_collectstart(collector: Collector) -> None:
 
 
 def pytest_make_collect_report(
-    collector: Collector
+    collector: Collector,
 ) -> CollectReport | None:
     """Make Collect Report Hook
 
@@ -1042,7 +1041,7 @@ def pytest_report_collectionfinish(
 
 def pytest_report_teststatus(
     report: CollectReport | TestReport,
-    config: Config
+    config: Config,
 ) -> TestShortLogReport | tuple[str, str, str | tuple[str, Mapping[str, bool]]]:
     """Report Test Status Hook
 
@@ -1236,9 +1235,7 @@ def pytest_warning_recorded(
     conftest_logger.debug(f"Location: {location}")
 
 
-def pytest_runtest_logreport(
-    report: TestReport
-) -> None:
+def pytest_runtest_logreport(report: TestReport) -> None:
     """Run Test Log Report Hook
 
     Process the TestReport produced for each of the setup, call and
@@ -1339,6 +1336,7 @@ def pytest_assertion_pass(
 ##############################
 # Debugging/Interaction Hook #
 ##############################
+
 
 def pytest_internalerror(
     excrepr: ExceptionRepr,
