@@ -50,7 +50,10 @@ class TestBetaMathematicsClass:
         mathematics = Mathematics()
 
         assert (
-            mathematics.add(first_number=first_number, second_number=second_number)
+            mathematics.add(
+                first_number=first_number,
+                second_number=second_number,
+            )
             == expected
         )
 
@@ -77,6 +80,9 @@ class TestBetaMathematicsClass:
         mathematics = Mathematics()
 
         assert (
-            mathematics.subtract(first_number=first_number, second_number=second_number)
+            mathematics.subtract(
+                first_number=first_number,
+                second_number=second_number,
+            )
             == expected
         )

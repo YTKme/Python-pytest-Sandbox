@@ -47,6 +47,9 @@ def test_add(
     mathematics = Mathematics()
 
     assert (
-        mathematics.add(first_number=first_number, second_number=second_number)
+        mathematics.add(
+            first_number=first_number,
+            second_number=second_number,
+        )
         == expected
     )
