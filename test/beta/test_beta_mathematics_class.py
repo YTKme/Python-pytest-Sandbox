@@ -9,21 +9,21 @@ level.
 from numbers import Number
 from pathlib import Path
 
+import pytest
 import tealogger
 
 from pytest_sandbox.beta.mathematics import Mathematics
-
 
 CURRENT_MODULE_PATH = Path(__file__).parent.expanduser().resolve()
 
 # Configure conftest_logger
 tealogger.configure(
-    configuration=CURRENT_MODULE_PATH.parents[1]
-    / "configuration/sandbox.logger.json"
+    configuration=CURRENT_MODULE_PATH.parents[1] / "configuration/sandbox.logger.json"
 )
 test_logger = tealogger.get_logger(__name__)
 
 
+@pytest.mark.beta
 class TestBetaMathematicsClass:
     """Test Mathematics"""
 
@@ -49,10 +49,10 @@ class TestBetaMathematicsClass:
 
         mathematics = Mathematics()
 
-        assert mathematics.add(
-            first_number=first_number,
-            second_number=second_number
-        ) == expected
+        assert (
+            mathematics.add(first_number=first_number, second_number=second_number)
+            == expected
+        )
 
     def test_subtract(
         self,
@@ -76,7 +76,7 @@ class TestBetaMathematicsClass:
 
         mathematics = Mathematics()
 
-        assert mathematics.subtract(
-            first_number=first_number,
-            second_number=second_number
-        ) == expected
+        assert (
+            mathematics.subtract(first_number=first_number, second_number=second_number)
+            == expected
+        )
